@@ -1,9 +1,10 @@
 # importing the required libraries
 
 from PyQt5.QtWidgets import *
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtGui import *
 from PyQt5 import QtWidgets, QtGui
 from PyQt5 import QtCore
+import random
 
 import sys
 import os
@@ -54,10 +55,29 @@ class Window(QMainWindow):
         self.label.resize(self.pixmap.width(),
                           self.pixmap.height())
 
+        self.timerLabel = QLabel(self)
+        self.timerLabel.setGeometry(QtCore.QRect(650, 10, 40, 50))
+        self.timerLabel.setText("RNG")
+        self.timerLabel.setFont(QFont("Arial", 16))
+        self.timerLabel.setAlignment(QtCore.Qt.AlignCenter)
+        # timer
+        self.timer = QtCore.QTimer()
+        self.timer.timeout.connect(self.getRandomNumberTimer)
+        self.timer.start(10000)
         # show all the widgets
         self.show()
 
     # create pyqt5 app
+    def getRandomNumberTimer(self):
+        rndNumber = random.randint(1, 100)
+        self.timerLabel.setText(str(rndNumber))
+        if rndNumber > 69:
+            self.timerLabel.setStyleSheet("background-color: red")
+        elif rndNumber < 31:
+            self.timerLabel.setStyleSheet("background-color: green")
+        else:
+            self.timerLabel.setStyleSheet("background-color: yellow")
+
     def setData(self):
         horHeaders = []
         for n, key in enumerate(self.ranges_texts.keys()):
