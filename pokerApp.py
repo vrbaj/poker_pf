@@ -23,6 +23,7 @@ class Window(QMainWindow):
         super().__init__()
         self.seconds_elapsed = 0
         self.session_time = 0
+        self.total_time = 0
         self.session_running = False
         self.acceptDrops()
         # set the title
@@ -67,25 +68,44 @@ class Window(QMainWindow):
         self.randomNumberLabel.setAlignment(QtCore.Qt.AlignCenter)
         # session time
         self.sessionLabel = QLabel(self)
-        self.sessionLabel.setGeometry(QtCore.QRect(380, 70, 150, 50))
+        self.sessionLabel.setGeometry(QtCore.QRect(380, 50, 150, 50))
         self.sessionLabel.setText("Session time:")
         self.sessionLabel.setFont(QFont("Arial", 16))
         self.sessionDurationLabel = QLabel(self)
-        self.sessionDurationLabel.setGeometry(QtCore.QRect(520, 70, 180, 50))
+        self.sessionDurationLabel.setGeometry(QtCore.QRect(520, 50, 180, 50))
         self.sessionDurationLabel.setText("00:00:00")
         self.sessionDurationLabel.setFont(QFont("Arial", 16))
+
+        # played so far
+        self.totalLabel = QLabel(self)
+        self.totalLabel.setGeometry(QtCore.QRect(620, 50, 150, 50))
+        self.totalLabel.setText("Total time:")
+        self.totalLabel.setFont(QFont("Arial", 16))
+        self.totalDurationLabel = QLabel(self)
+        self.totalDurationLabel.setGeometry(QtCore.QRect(720, 50, 180, 50))
+        self.totalDurationLabel.setText("00:00:00")
+        self.totalDurationLabel.setFont(QFont("Arial", 16))
+
+        # reset session
+        self.resetButton = QPushButton(self)
+        self.resetButton.setGeometry(QtCore.QRect(510, 120, 120, 36))
+        self.resetButton.setText("Reset session")
+        self.resetButton.setFont(QFont("Arial", 12))
+        self.resetButton.clicked.connect(self.session_reset)
+
         # start/pause session button
         self.sessionButton = QPushButton(self)
         self.sessionButton.setGeometry(QtCore.QRect(380, 120, 120, 36))
         self.sessionButton.setText("Start session")
         self.sessionButton.setFont(QFont("Arial", 12))
         self.sessionButton.clicked.connect(self.session_switch)
-        # reset session
-        self.resetButton = QPushButton(self)
-        self.resetButton.setGeometry(QtCore.QRect(520, 120, 120, 36))
-        self.resetButton.setText("Reset time")
-        self.resetButton.setFont(QFont("Arial", 12))
-        self.resetButton.clicked.connect(self.session_reset)
+
+        # total time reset button
+        self.resetTotalButton = QPushButton(self)
+        self.resetTotalButton.setGeometry(QtCore.QRect(640, 120, 120, 36))
+        self.resetTotalButton.setText("Reset total")
+        self.resetTotalButton.setFont(QFont("Arial", 12))
+        self.resetTotalButton.clicked.connect(self.total_reset)
 
         # timer
         self.timer = QtCore.QTimer()
@@ -105,6 +125,10 @@ class Window(QMainWindow):
         self.session_time = -1
         self.sessionDurationLabel.setText("0:00:00")
 
+    def total_reset(self):
+        self.total_time = -1
+        self.totalDurationLabel.setText("0:00:00")
+
     # create PyQt5 app
     def timer_action(self):
         self.seconds_elapsed += 1
@@ -119,9 +143,9 @@ class Window(QMainWindow):
                 self.randomNumberLabel.setStyleSheet("background-color: yellow")
         if self.session_running:
             self.session_time += 1
+            self.total_time += 1
             self.sessionDurationLabel.setText(str(timedelta(seconds=self.session_time)))
-
-
+            self.totalDurationLabel.setText(str(timedelta(seconds=self.total_time)))
 
     def set_table_texts(self):
         horizontal_headrs = []
