@@ -1,12 +1,11 @@
 # importing the required libraries
-
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import QFont, QPixmap
 from PyQt5 import QtWidgets
 from PyQt5 import QtCore
 from random import randint
 from datetime import timedelta
-
+from pywinauto import Desktop
 import sys
 import os
 
@@ -26,6 +25,7 @@ class Window(QMainWindow):
         self.total_time = 0
         self.session_running = False
         self.acceptDrops()
+        self.desired_win_name = "No Limit Hold'em - Logged In"
         # set the title
         self.setWindowTitle("Poker helper")
         # setting  the geometry of window
@@ -141,6 +141,14 @@ class Window(QMainWindow):
                 self.randomNumberLabel.setStyleSheet("background-color: green")
             else:
                 self.randomNumberLabel.setStyleSheet("background-color: yellow")
+            windows = Desktop(backend="win32").windows()
+            window_text = [w.window_text() for w in windows]
+            for single_text in window_text:
+                if self.desired_win_name in single_text:
+                    self.session_running = True
+                    break
+                else:
+                    self.session_running = False
         if self.session_running:
             self.session_time += 1
             self.total_time += 1
@@ -176,7 +184,6 @@ class Window(QMainWindow):
             pass
             # vs open
             range_to_show = player_position + '_vs_' + villain_position + '.jpg'
-
         print(range_to_show.lower())
         self.pixmap = QPixmap(os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                            'range_img', range_to_show.lower())).scaled(700, 700,
